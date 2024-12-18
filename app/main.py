@@ -1,7 +1,10 @@
 import sys
 
 def main():
-    valid_commands = []  # List for valid commands
+    valid_commands = [{
+        "echo": "echo is a shell builtin",
+        "exit": "exit is a shell builtin"
+    }]  # List for valid commands
     while True:
         # Print the prompt
         sys.stdout.write("$ ")
@@ -13,11 +16,14 @@ def main():
         # Exit cleanly if 'exit 0'
         if command == "exit 0":
             sys.exit(0)  # Terminate with exit code 0
-        
-        # Handle 'echo' command
-        if command.startswith("echo "):
-            print(command[len("echo "):])  # Print after 'echo '
 
+        if command.startswith("type "):
+            cmd = command[len("type "):]
+            if cmd in valid_commands:
+                print(valid_commands[cmd])
+            else:
+                print(f"{cmd}: not found")
+        
         # Handle invalid commands
         else:
             print(f"{command}: command not found")
