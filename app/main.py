@@ -1,11 +1,6 @@
 import sys
 
 def main():
-    valid_builtin_commands = {
-        "echo": "echo is a shell builtin",
-        "exit": "exit is a shell builtin"
-    }
-
     while True:
         # Print the prompt
         sys.stdout.write("$ ")
@@ -13,22 +8,39 @@ def main():
 
         # Read and clean user input
         command = input().strip()
+        if not command:
+            continue
+        
+        # Split the command into parts
+        command_array = command.split()
+        main_command = command_array[0]
 
-        # Exit cleanly if 'exit 0'
-        if command == "exit 0":
-            sys.exit(0)  # Terminate with exit code 0
+        # Handle 'exit 0'
+        if main_command == "exit" and len(command_array) == 2 and command_array[1] == "0":
+            sys.exit(0)
+
+        # Handle 'echo' command
+        elif main_command == "echo":
+            echo = ""
+            for word in command_array[1:]:
+                echo += f"{word} "
+            print(echo.rstrip())
         
-        # Handle 'type <command>' input
-        if command.startswith("type "):
-            cmd_name = command[len("type "):]  # Extract command after 'type '
-            if cmd_name in valid_builtin_commands:
-                print(valid_builtin_commands[cmd_name])  # Print description
+        # Handle 'type <command>' command
+        elif main_command == "type":
+            if len(command_array) > 1:
+                evaled_command = command_array[1]
+                if evaled_command in ["echo", "exit", "type"]:
+                    print(f"{evaled_command} is a shell builtin")
+                else:
+                    print(f"{evaled_command}: not found")
             else:
-                print(f"{cmd_name}: not found")  # Command not found
+                print("type: missing operand")
         
-        # General unrecognized commands
+        # Handle invalid or unrecognized commands
         else:
-            print(f"{command}: command not found")
+            print(f"{main_command}: command not found")
+
 
 if __name__ == "__main__":
     main()
