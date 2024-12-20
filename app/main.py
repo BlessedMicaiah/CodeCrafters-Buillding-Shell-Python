@@ -21,6 +21,7 @@ def main():
 
         if main_command == "pwd":
             print(current_dir)
+            continue
 
         if main_command == "echo":
             echo_output = " ".join(args)
