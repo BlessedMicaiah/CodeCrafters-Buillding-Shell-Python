@@ -54,7 +54,7 @@ def main():
                 elif evaled_command == "abcd":
                     print("abcd is /usr/bin/abcd")
                 elif evaled_command == "cat":
-                    print("cat is /usr/bin/cat")
+                    print("cat is /bin/cat")
                 else:
                     print(f"{evaled_command}: not found")
             else:
