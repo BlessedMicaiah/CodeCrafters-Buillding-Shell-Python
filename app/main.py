@@ -3,12 +3,13 @@ import os
 import subprocess
 
 def main():
-    builtin_cmds = ["echo", "exit", "type"]
+    builtin_cmds = ["echo", "exit", "type", "pwd"]
     PATH = os.environ.get("PATH", "").split(':')
 
     while True:
         sys.stdout.write("$ ")
         sys.stdout.flush()
+        current_dir = os.getcwd()
         user_input = input().strip()
 
         if user_input == "exit 0":
@@ -17,6 +18,9 @@ def main():
         command_parts = user_input.split(" ", 1)
         main_command = command_parts[0]
         args = command_parts[1].split() if len(command_parts) > 1 else []
+
+        if main_command == "pwd":
+            print(current_dir)
 
         if main_command == "echo":
             echo_output = " ".join(args)
@@ -69,8 +73,6 @@ def main():
                 except subprocess.CalledProcessError:
                     print(f"Error executing {main_command}")
 
-        # Don't print the prompt here as it's already printed at the start of the loop
-        # sys.stdout.write("$ ")  # Commented out to avoid double prompt
         sys.stdout.flush()
 
 if __name__ == "__main__":
