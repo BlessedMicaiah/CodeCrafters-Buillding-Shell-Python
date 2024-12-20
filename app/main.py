@@ -65,7 +65,7 @@ def main():
                         if result.stderr:
                             print(result.stderr, end="")
                 except FileNotFoundError:
-                    print(f"${' '.join([main_command] + args)}: command not found")
+                    print(f"{' '.join([main_command] + args)}: command not found")
                 except subprocess.CalledProcessError:
                     print(f"Error executing {main_command}")
 
