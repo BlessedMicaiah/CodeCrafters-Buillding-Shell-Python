@@ -36,6 +36,10 @@ def main():
         # Handle 'cat' command
         elif main_command == "cat":
             abcd = ""
+        
+        # Handle 'cp' command
+        elif main_command == "cp":
+            cp = ""
 
         # Handle 'echo' command
         elif main_command == "echo":
@@ -55,6 +59,8 @@ def main():
                     print("abcd is /usr/bin/abcd")
                 elif evaled_command == "cat":
                     print("cat is /bin/cat")
+                elif evaled_command == "cp":
+                    print("cat is /bin/cp")
                 else:
                     print(f"{evaled_command}: not found")
             else:
