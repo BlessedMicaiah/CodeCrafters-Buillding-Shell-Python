@@ -1,6 +1,7 @@
 import sys
 import os
 import subprocess
+import shlex
 
 def main():
     builtin_cmds = ["echo", "exit", "type", "pwd", "cd"]
@@ -15,9 +16,10 @@ def main():
         if user_input == "exit 0":
             break
 
-        command_parts = user_input.split(" ", 1)
-        main_command = command_parts[0]
-        args = command_parts[1].split() if len(command_parts) > 1 else []
+        # Use shlex.split to properly handle quoted arguments
+        command_parts = shlex.split(user_input)
+        main_command = command_parts[0] if command_parts else ""
+        args = command_parts[1:] if len(command_parts) > 1 else []
 
         if main_command == "pwd":
             print(current_dir)
@@ -32,7 +34,7 @@ def main():
                         home_dir = os.path.expanduser("~")
                         os.chdir(home_dir)
                     else:
-                        os.chdir(args[0]) 
+                        os.chdir(args[0])
                 else:
                     raise IndexError("Missing argument")
             except IndexError:
@@ -46,10 +48,6 @@ def main():
         if main_command == "echo":
             echo_output = " ".join(args)
             print(echo_output)
-        
-        elif main_command == "echo '{args[0]}'":
-            echo_output1 = {args}
-            print(echo_output1)
 
         elif main_command == "type":
             if not args:
