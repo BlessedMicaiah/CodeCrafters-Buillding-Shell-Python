@@ -23,6 +23,21 @@ def main():
             print(current_dir)
             continue
 
+        if main_command == "cd":
+            try:
+                PATH
+                if path == "..":
+                    os.chdir(os.path.dirname(current_dir))
+                else:
+                    os.chdir(path)
+            except IndexError:
+                print(f"cd: missing argument")
+            except FileNotFoundError:
+                print(f"cd: no such file or directory: {path}")
+            except Exception as e:
+                print(f"Error changing directory: {e}")
+            continue
+
         if main_command == "echo":
             echo_output = " ".join(args)
             print(echo_output)
