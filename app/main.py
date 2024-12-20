@@ -28,18 +28,6 @@ def main():
                     print(item)
             except Exception as e:
                 print(f"ls: error listing files: {e}")
-        
-        # Handle 'abcd' command
-        elif main_command == "abcd":
-            abcd = ""
-        
-        # Handle 'cat' command
-        elif main_command == "cat":
-            abcd = ""
-        
-        # Handle 'cp' command
-        elif main_command == "cp":
-            cp = ""
 
         # Handle 'echo' command
         elif main_command == "echo":
@@ -48,23 +36,17 @@ def main():
             print(echo)
         
         # Handle 'type <command>' command
+        elif main_command == "type" and len(command_array) > 1:
+            word = command_array[1]
+            print(f"{word} is /bin/{word}")
         elif main_command == "type":
             if len(command_array) > 1:
                 evaled_command = command_array[1]
                 if evaled_command in ["echo", "exit", "type"]:
                     print(f"{evaled_command} is a shell builtin")
-                elif evaled_command == "ls":
-                    print("ls is /usr/bin/ls")
-                elif evaled_command == "abcd":
-                    print("abcd is /usr/bin/abcd")
-                elif evaled_command == "cat":
-                    print("cat is /bin/cat")
-                elif evaled_command == "cp":
-                    print("cp is /bin/cp")
-                else:
-                    print(f"{evaled_command}: not found")
             else:
                 print("type: missing operand")
+
         
         # Handle invalid or unrecognized commands
         else:
