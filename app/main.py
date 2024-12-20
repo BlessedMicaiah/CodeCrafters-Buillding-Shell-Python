@@ -60,7 +60,7 @@ def main():
                 elif evaled_command == "cat":
                     print("cat is /bin/cat")
                 elif evaled_command == "cp":
-                    print("cat is /bin/cp")
+                    print("cp is /bin/cp")
                 else:
                     print(f"{evaled_command}: not found")
             else:
