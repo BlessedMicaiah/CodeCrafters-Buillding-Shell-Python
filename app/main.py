@@ -21,7 +21,6 @@ def main():
         if main_command == "echo":
             echo_output = " ".join(args)
             sys.stdout.write(echo_output + "\n")
-            sys.stdout.flush()
 
         elif main_command == "type":
             if not args:
@@ -36,7 +35,6 @@ def main():
                         sys.stdout.write(f"{cmd} is {cmd_path}\n")
                     else:
                         sys.stdout.write(f"{cmd}: not found\n")
-            sys.stdout.flush()
 
         else:
             full_path = next((f"{path}/{main_command}" for path in PATH if os.path.isfile(f"{path}/{main_command}")), main_command)
@@ -56,15 +54,12 @@ def main():
                     if result.stderr:
                         sys.stdout.write(result.stderr + "\n")
                 
-                sys.stdout.flush()
-
             except FileNotFoundError:
                 sys.stdout.write(f"{main_command}: command not found\n")
             except subprocess.CalledProcessError:
                 sys.stdout.write(f"Error executing {main_command}\n")
 
-        # Ensure prompt is printed after every command execution
-        sys.stdout.write("$ ")
+        # Flush after every write
         sys.stdout.flush()
 
 if __name__ == "__main__":
