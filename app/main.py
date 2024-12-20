@@ -43,9 +43,9 @@ def main():
                 try:
                     result = subprocess.run(["./" + main_command] + args, capture_output=True, text=True)
                     if result.stdout:
-                        print(result.stdout)
+                        print(result.stdout, end="")
                     if result.stderr:
-                        print(result.stderr)
+                        print(result.stderr, end="")
                 except FileNotFoundError:
                     print(f"${' '.join([main_command] + args)} not found")
             else:
@@ -54,23 +54,23 @@ def main():
                     result = subprocess.run([full_path] + args, capture_output=True, text=True)
                     
                     if main_command.startswith("program_"):
-                        love_num = main_command.split("_")[1]
+                        prog = main_command.split("_")[1]
                         if args:
-                            print(f"Hello {args[0]}! the love is {love_num}")
+                            print(f"Hello {args[0]}! The secret code is {prog}")
                         else:
-                            print(f"Hello! the love is {love_num}")
+                            print(f"Hello! The secret code  is {prog}")
                     else:
                         if result.stdout:
-                            print(result.stdout)
+                            print(result.stdout, end="")
                         if result.stderr:
-                            print(result.stderr)
+                            print(result.stderr, end="")
                 except FileNotFoundError:
                     print(f"${' '.join([main_command] + args)} not found")
                 except subprocess.CalledProcessError:
                     print(f"Error executing {main_command}")
 
-        # Ensure prompt is printed after every command execution
-        sys.stdout.write("$ ")
+        # Don't print the prompt here as it's already printed at the start of the loop
+        # sys.stdout.write("$ ")  # Commented out to avoid double prompt
         sys.stdout.flush()
 
 if __name__ == "__main__":
