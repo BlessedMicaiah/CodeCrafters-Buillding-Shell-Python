@@ -35,7 +35,7 @@ def main():
             except IndexError:
                 print(f"cd: missing argument")
             except FileNotFoundError:
-                print(f"cd: no such file or directory: {args[0]}")
+                print(f"cd: {args[0]}: No such file or directory")
             except Exception as e:
                 print(f"Error changing directory: {e}")
             continue
