@@ -3,7 +3,7 @@ import os
 import subprocess
 
 def main():
-    builtin_cmds = ["echo", "exit", "type", "pwd"]
+    builtin_cmds = ["echo", "exit", "type", "pwd", "cd"]
     PATH = os.environ.get("PATH", "").split(':')
 
     while True:
@@ -25,15 +25,17 @@ def main():
 
         if main_command == "cd":
             try:
-                PATH
-                if path == "..":
-                    os.chdir(os.path.dirname(current_dir))
+                if args:
+                    if args[0] == "..":
+                        os.chdir(os.path.dirname(current_dir))
+                    else:
+                        os.chdir(args[0])  # Use args[0] instead of 'path'
                 else:
-                    os.chdir(path)
+                    raise IndexError("Missing argument")
             except IndexError:
                 print(f"cd: missing argument")
             except FileNotFoundError:
-                print(f"cd: no such file or directory: {path}")
+                print(f"cd: no such file or directory: {args[0]}")
             except Exception as e:
                 print(f"Error changing directory: {e}")
             continue
