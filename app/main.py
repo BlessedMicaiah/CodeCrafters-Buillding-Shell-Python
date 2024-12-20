@@ -46,6 +46,10 @@ def main():
         if main_command == "echo":
             echo_output = " ".join(args)
             print(echo_output)
+        
+        elif main_command == "echo '{args[0]}'":
+            echo_output1 = {args}
+            print(echo_output1)
 
         elif main_command == "type":
             if not args:
