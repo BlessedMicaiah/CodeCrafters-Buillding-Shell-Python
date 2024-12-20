@@ -28,8 +28,11 @@ def main():
                 if args:
                     if args[0] == "..":
                         os.chdir(os.path.dirname(current_dir))
+                    elif args[0] == "~":
+                        home_dir = os.path.expanduser("~")
+                        os.chdir(home_dir)
                     else:
-                        os.chdir(args[0])  # Use args[0] instead of 'path'
+                        os.chdir(args[0]) 
                 else:
                     raise IndexError("Missing argument")
             except IndexError:
@@ -61,7 +64,7 @@ def main():
         else:
             full_path = next((f"{path}/{main_command}" for path in PATH if os.path.isfile(f"{path}/{main_command}")), main_command)
 
-            if os.path.isfile(main_command):  # Handle direct path to executable
+            if os.path.isfile(main_command):  
                 try:
                     result = subprocess.run(["./" + main_command] + args, capture_output=True, text=True)
                     if result.stdout:
