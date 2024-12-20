@@ -39,22 +39,18 @@ def main():
             sys.stdout.flush()
 
         else:
-            # Check if the command is in PATH or directly accessible
             full_path = next((f"{path}/{main_command}" for path in PATH if os.path.isfile(f"{path}/{main_command}")), main_command)
 
             try:
-                # Run the command with any arguments provided
                 result = subprocess.run([full_path] + args, capture_output=True, text=True)
                 
-                # Example for "program_212 ben"
                 if main_command.startswith("program_"):
                     prog = main_command.split("_")[1]
                     if args:
-                        sys.stdout.write(f"Hello {args[0]}! The secret code is {prog}\n")
+                        sys.stdout.write(f"Hello {args[0]}! the love is {prog}\n")
                     else:
-                        sys.stdout.write(f"Hello! The secret code is {prog}\n")
+                        sys.stdout.write(f"Hello! the love is {prog}\n")
                 else:
-                    # For other executables, print stdout or stderr if any
                     if result.stdout:
                         sys.stdout.write(result.stdout + "\n")
                     if result.stderr:
@@ -64,10 +60,12 @@ def main():
 
             except FileNotFoundError:
                 sys.stdout.write(f"{main_command}: command not found\n")
-                sys.stdout.flush()
             except subprocess.CalledProcessError:
                 sys.stdout.write(f"Error executing {main_command}\n")
-                sys.stdout.flush()
+
+        # Ensure prompt is printed after every command execution
+        sys.stdout.write("$ ")
+        sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
