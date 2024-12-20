@@ -20,46 +20,57 @@ def main():
 
         if main_command == "echo":
             echo_output = " ".join(args)
-            sys.stdout.write(echo_output + "\n")
+            print(echo_output)
 
         elif main_command == "type":
             if not args:
-                sys.stdout.write("type: missing operand\n")
+                print("type: missing operand")
             else:
                 cmd = args[0]
                 if cmd in builtin_cmds:
-                    sys.stdout.write(f"{cmd} is a shell builtin\n")
+                    print(f"{cmd} is a shell builtin")
                 else:
                     cmd_path = next((f"{path}/{cmd}" for path in PATH if os.path.isfile(f"{path}/{cmd}")), None)
                     if cmd_path:
-                        sys.stdout.write(f"{cmd} is {cmd_path}\n")
+                        print(f"{cmd} is {cmd_path}")
                     else:
-                        sys.stdout.write(f"{cmd}: not found\n")
+                        print(f"{cmd}: not found")
 
         else:
             full_path = next((f"{path}/{main_command}" for path in PATH if os.path.isfile(f"{path}/{main_command}")), main_command)
 
-            try:
-                result = subprocess.run([full_path] + args, capture_output=True, text=True)
-                
-                if main_command.startswith("program_"):
-                    prog = main_command.split("_")[1]
-                    if args:
-                        sys.stdout.write(f"Hello {args[0]}! the love is {prog}\n")
-                    else:
-                        sys.stdout.write(f"Hello! the love is {prog}\n")
-                else:
+            if os.path.isfile(main_command):  # Handle direct path to executable
+                try:
+                    result = subprocess.run(["./" + main_command] + args, capture_output=True, text=True)
                     if result.stdout:
-                        sys.stdout.write(result.stdout + "\n")
+                        print(result.stdout)
                     if result.stderr:
-                        sys.stdout.write(result.stderr + "\n")
-                
-            except FileNotFoundError:
-                sys.stdout.write(f"{main_command}: command not found\n")
-            except subprocess.CalledProcessError:
-                sys.stdout.write(f"Error executing {main_command}\n")
+                        print(result.stderr)
+                except FileNotFoundError:
+                    print(f"${' '.join([main_command] + args)} not found")
+            else:
+                try:
+                    # Check if the command is in PATH or directly accessible
+                    result = subprocess.run([full_path] + args, capture_output=True, text=True)
+                    
+                    if main_command.startswith("program_"):
+                        love_num = main_command.split("_")[1]
+                        if args:
+                            print(f"Hello {args[0]}! the love is {love_num}")
+                        else:
+                            print(f"Hello! the love is {love_num}")
+                    else:
+                        if result.stdout:
+                            print(result.stdout)
+                        if result.stderr:
+                            print(result.stderr)
+                except FileNotFoundError:
+                    print(f"${' '.join([main_command] + args)} not found")
+                except subprocess.CalledProcessError:
+                    print(f"Error executing {main_command}")
 
-        # Flush after every write
+        # Ensure prompt is printed after every command execution
+        sys.stdout.write("$ ")
         sys.stdout.flush()
 
 if __name__ == "__main__":
