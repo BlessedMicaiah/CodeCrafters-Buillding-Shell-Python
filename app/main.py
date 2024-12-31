@@ -10,13 +10,12 @@ def main():
     while True:
         sys.stdout.write("$ ")
         sys.stdout.flush()
-        current_dir = os.getcwd()
         user_input = input().strip()
 
         if user_input == "exit 0":
             break
 
-        # Split the command and check for redirection
+        
         command_parts = shlex.split(user_input)
         if ">" in command_parts:
             cmd_index = command_parts.index(">")
@@ -24,7 +23,7 @@ def main():
             if len(command_parts) > cmd_index + 1:
                 output_file = command_parts[cmd_index + 1].strip()
             else:
-                output_file = None  # Handle error or default action
+                output_file = None  
         else:
             command = command_parts
             output_file = None
@@ -32,21 +31,19 @@ def main():
         main_command = command[0] if command else ""
         args = command[1:] if len(command) > 1 else []
 
-        # Built-in commands implementation
+    
         if main_command == "pwd":
-            print(current_dir)
+            print(os.getcwd())
         elif main_command == "cd":
             try:
                 if args:
                     path = args[0]
                     if path == "..":
-                        os.chdir(os.path.dirname(current_dir))
+                        os.chdir(os.path.dirname(os.getcwd()))
                     elif path == "~":
                         os.chdir(os.path.expanduser("~"))
                     else:
                         os.chdir(path)
-                else:
-                    os.chdir(os.path.expanduser("~"))
             except Exception as e:
                 print(f"cd: {e}")
         elif main_command == "echo":
@@ -70,23 +67,25 @@ def main():
                     else:
                         print(f"{cmd}: not found")
         else:
-            # External command execution with optional redirection
+        
             full_path = next((f"{path}/{main_command}" for path in PATH if os.path.isfile(f"{path}/{main_command}")), main_command)
             try:
                 if os.path.isfile(main_command):  
-                    result = subprocess.run(["./" + main_command] + args, capture_output=True, text=True)
+                    subprocess.run([main_command] + args, check=True, capture_output=True, text=True)
                 else:
                     if output_file:
                         with open(output_file, 'w') as f:
-                            result = subprocess.run([full_path] + args, stdout=f, stderr=subprocess.STDOUT, text=True)
+                            subprocess.run([full_path] + args, stdout=f, stderr=subprocess.STDOUT, check=True, text=True)
                     else:
                         result = subprocess.run([full_path] + args, capture_output=True, text=True)
-                    if result.stdout:
-                        print(result.stdout, end="")
-                    if result.stderr:
-                        print(result.stderr, end="")
+                        if result.stdout:
+                            print(result.stdout, end="")
+                        if result.stderr:
+                            print(result.stderr, end="")
             except FileNotFoundError:
                 print(f"{main_command}: command not found")
+            except subprocess.CalledProcessError as e:
+                print(e.output)  
 
 if __name__ == "__main__":
     main()
