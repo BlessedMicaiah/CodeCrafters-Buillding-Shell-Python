@@ -16,39 +16,46 @@ def main():
         if user_input == "exit 0":
             break
 
-        # Use shlex.split to properly handle quoted arguments
+        # Split the command and check for redirection
         command_parts = shlex.split(user_input)
-        main_command = command_parts[0] if command_parts else ""
-        args = command_parts[1:] if len(command_parts) > 1 else []
+        if ">" in command_parts:
+            cmd_index = command_parts.index(">")
+            command = command_parts[:cmd_index]
+            if len(command_parts) > cmd_index + 1:
+                output_file = command_parts[cmd_index + 1].strip()
+            else:
+                output_file = None  # Handle error or default action
+        else:
+            command = command_parts
+            output_file = None
 
+        main_command = command[0] if command else ""
+        args = command[1:] if len(command) > 1 else []
+
+        # Built-in commands implementation
         if main_command == "pwd":
             print(current_dir)
-            continue
-
-        if main_command == "cd":
+        elif main_command == "cd":
             try:
                 if args:
-                    if args[0] == "..":
+                    path = args[0]
+                    if path == "..":
                         os.chdir(os.path.dirname(current_dir))
-                    elif args[0] == "~":
-                        home_dir = os.path.expanduser("~")
-                        os.chdir(home_dir)
+                    elif path == "~":
+                        os.chdir(os.path.expanduser("~"))
                     else:
-                        os.chdir(args[0])
+                        os.chdir(path)
                 else:
-                    raise IndexError("Missing argument")
-            except IndexError:
-                print(f"cd: missing argument")
-            except FileNotFoundError:
-                print(f"cd: {args[0]}: No such file or directory")
+                    os.chdir(os.path.expanduser("~"))
             except Exception as e:
-                print(f"Error changing directory: {e}")
-            continue
-
-        if main_command == "echo":
+                print(f"cd: {e}")
+        elif main_command == "echo":
             echo_output = " ".join(args)
-            print(echo_output)
-
+            if output_file:
+                with open(output_file, 'w') as f:
+                    f.write(echo_output + "\n")
+            else:
+                print(echo_output)
         elif main_command == "type":
             if not args:
                 print("type: missing operand")
@@ -62,41 +69,24 @@ def main():
                         print(f"{cmd} is {cmd_path}")
                     else:
                         print(f"{cmd}: not found")
-
         else:
+            # External command execution with optional redirection
             full_path = next((f"{path}/{main_command}" for path in PATH if os.path.isfile(f"{path}/{main_command}")), main_command)
-
-            if os.path.isfile(main_command):  
-                try:
+            try:
+                if os.path.isfile(main_command):  
                     result = subprocess.run(["./" + main_command] + args, capture_output=True, text=True)
+                else:
+                    if output_file:
+                        with open(output_file, 'w') as f:
+                            result = subprocess.run([full_path] + args, stdout=f, stderr=subprocess.STDOUT, text=True)
+                    else:
+                        result = subprocess.run([full_path] + args, capture_output=True, text=True)
                     if result.stdout:
                         print(result.stdout, end="")
                     if result.stderr:
                         print(result.stderr, end="")
-                except FileNotFoundError:
-                    print(f"${' '.join([main_command] + args)} not found")
-            else:
-                try:
-                    # Check if the command is in PATH or directly accessible
-                    result = subprocess.run([full_path] + args, capture_output=True, text=True)
-                    
-                    if main_command.startswith("program_"):
-                        prog = main_command.split("_")[1]
-                        if args:
-                            print(f"Hello {args[0]}! The secret code is {prog}")
-                        else:
-                            print(f"Hello! The secret code  is {prog}")
-                    else:
-                        if result.stdout:
-                            print(result.stdout, end="")
-                        if result.stderr:
-                            print(result.stderr, end="")
-                except FileNotFoundError:
-                    print(f"{' '.join([main_command] + args)}: command not found")
-                except subprocess.CalledProcessError:
-                    print(f"Error executing {main_command}")
-
-        sys.stdout.flush()
+            except FileNotFoundError:
+                print(f"{main_command}: command not found")
 
 if __name__ == "__main__":
     main()
