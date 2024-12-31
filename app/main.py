@@ -14,8 +14,6 @@ def main():
 
         if user_input == "exit 0":
             break
-
-        
         command_parts = shlex.split(user_input)
         if ">" in command_parts:
             cmd_index = command_parts.index(">")
@@ -30,8 +28,6 @@ def main():
 
         main_command = command[0] if command else ""
         args = command[1:] if len(command) > 1 else []
-
-    
         if main_command == "pwd":
             print(os.getcwd())
         elif main_command == "cd":
@@ -67,21 +63,20 @@ def main():
                     else:
                         print(f"{cmd}: not found")
         else:
-        
             full_path = next((f"{path}/{main_command}" for path in PATH if os.path.isfile(f"{path}/{main_command}")), main_command)
             try:
                 if os.path.isfile(main_command):  
-                    subprocess.run([main_command] + args, check=True, capture_output=True, text=True)
+                    result = subprocess.run(["./" + main_command] + args, capture_output=True, text=True)
                 else:
                     if output_file:
                         with open(output_file, 'w') as f:
-                            subprocess.run([full_path] + args, stdout=f, stderr=subprocess.STDOUT, check=True, text=True)
+                            result = subprocess.run([full_path] + args, stdout=f, stderr=subprocess.STDOUT, text=True)
                     else:
                         result = subprocess.run([full_path] + args, capture_output=True, text=True)
-                        if result.stdout:
-                            print(result.stdout, end="")
-                        if result.stderr:
-                            print(result.stderr, end="")
+                    if result.stdout:
+                        print(result.stdout, end="")
+                    if result.stderr:
+                        print(result.stderr, end="")
             except FileNotFoundError:
                 print(f"{main_command}: command not found")
             except subprocess.CalledProcessError as e:
